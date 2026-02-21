@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Study Buddy - Emma & Anna</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --pink: #FF6B9D; --purple: #C084FC; --blue: #60A5FA; --green: #34D399;
+    --yellow: #FBBF24; --orange: #FB923C; --red: #F87171;
+    --bg: #FFF7ED; --card: #FFFFFF; --text: #1E293B; --text-light: #64748B;
+  }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; -webkit-user-select: none; user-select: none; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes popIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+  @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+  @keyframes shake { 0%,100% { transform:translateX(0); } 25% { transform:translateX(-8px); } 75% { transform:translateX(8px); } }
+  @keyframes confetti { 0% { opacity:1; transform:translateY(0) rotate(0deg); } 100% { opacity:0; transform:translateY(300px) rotate(720deg); } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+  @keyframes flipIn { from { transform:rotateY(90deg); } to { transform:rotateY(0); } }
+  @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.08); } }
+  @keyframes glow { 0%,100% { box-shadow:0 0 5px rgba(192,132,252,0.3); } 50% { box-shadow:0 0 20px rgba(192,132,252,0.6); } }
+  @keyframes timerPulse { 0%,100% { color:var(--red); transform:scale(1); } 50% { transform:scale(1.15); } }
+  @keyframes letterPop { from { transform:scale(0) rotate(-10deg); } to { transform:scale(1) rotate(0); } }
+
+  .header { background:linear-gradient(135deg,var(--purple),var(--pink)); padding:20px 24px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 20px rgba(192,132,252,0.3); position:sticky; top:0; z-index:100; }
+  .header h1 { color:white; font-size:24px; font-weight:900; letter-spacing:-0.5px; }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .back-btn { background:rgba(255,255,255,0.2); border:none; color:white; width:44px; height:44px; border-radius:14px; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .back-btn:active { transform:scale(0.9); }
+  .stars-display { background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:20px; color:white; font-weight:800; font-size:18px; display:flex; align-items:center; gap:6px; }
+  .container { max-width:900px; margin:0 auto; padding:24px; }
+
+  /* Player Select */
+  .player-select { text-align:center; padding:30px 0 10px; animation:fadeIn 0.6s ease; }
+  .player-select-emoji { font-size:64px; animation:float 3s ease-in-out infinite; }
+  .player-select h2 { font-size:32px; font-weight:900; margin:12px 0 8px; }
+  .player-select p { font-size:18px; color:var(--text-light); font-weight:600; }
+  .player-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:30px; }
+  .player-card { background:var(--card); border-radius:28px; padding:36px 20px; text-align:center; cursor:pointer; transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275); box-shadow:0 4px 15px rgba(0,0,0,0.06); border:4px solid transparent; animation:popIn 0.5s ease backwards; }
+  .player-card:nth-child(2) { animation-delay:0.15s; }
+  .player-card:active { transform:scale(0.95); }
+  .player-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.1); }
+  .player-card.emma { border-color:var(--purple); }
+  .player-card.emma:hover { background:#FAF5FF; }
+  .player-card.anna { border-color:var(--pink); }
+  .player-card.anna:hover { background:#FFF1F2; }
+  .player-avatar { font-size:72px; margin-bottom:12px; display:block; }
+  .player-name { font-size:28px; font-weight:900; }
+  .player-age { font-size:16px; color:var(--text-light); font-weight:700; margin-top:4px; }
+  .player-stars-count { font-size:14px; color:var(--text-light); font-weight:600; margin-top:8px; }
+
+  /* Activity Select (replaces subject select) */
+  .welcome { text-align:center; padding:20px 0 12px; animation:fadeIn 0.6s ease; }
+  .welcome-emoji { font-size:56px; animation:float 3s ease-in-out infinite; }
+  .welcome h2 { font-size:28px; font-weight:900; margin:10px 0 4px; }
+  .welcome p { font-size:16px; color:var(--text-light); font-weight:600; }
+  .activity-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; }
+  .activity-card { background:var(--card); border-radius:22px; padding:24px 16px; text-align:center; cursor:pointer; transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275); box-shadow:0 4px 15px rgba(0,0,0,0.06); border:3px solid transparent; animation:popIn 0.4s ease backwards; }
+  .activity-card:nth-child(2) { animation-delay:0.08s; }
+  .activity-card:nth-child(3) { animation-delay:0.16s; }
+  .activity-card:nth-child(4) { animation-delay:0.24s; }
+  .activity-card:nth-child(5) { animation-delay:0.32s; }
+  .activity-card:active { transform:scale(0.95); }
+  .activity-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.1); }
+  .activity-card .act-icon { font-size:44px; margin-bottom:8px; display:block; }
+  .activity-card .act-name { font-size:18px; font-weight:800; margin-bottom:2px; }
+  .activity-card .act-desc { font-size:12px; color:var(--text-light); font-weight:600; }
+  .activity-card.c-blue { border-color:var(--blue); }
+  .activity-card.c-blue:hover { background:#EFF6FF; }
+  .activity-card.c-green { border-color:var(--green); }
+  .activity-card.c-green:hover { background:#ECFDF5; }
+  .activity-card.c-orange { border-color:var(--orange); }
+  .activity-card.c-orange:hover { background:#FFF7ED; }
+  .activity-card.c-purple { border-color:var(--purple); }
+  .activity-card.c-purple:hover { background:#FAF5FF; }
+  .activity-card.c-pink { border-color:var(--pink); }
+  .activity-card.c-pink:hover { background:#FFF1F2; }
+
+  /* Quiz */
+  .quiz-area { animation:fadeIn 0.4s ease; }
+  .progress-bar { background:#E2E8F0; border-radius:12px; height:12px; margin-bottom:24px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:12px; background:linear-gradient(90deg,var(--purple),var(--pink)); transition:width 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .question-counter { text-align:center; font-size:15px; font-weight:700; color:var(--text-light); margin-bottom:8px; }
+  .question-card { background:var(--card); border-radius:24px; padding:32px 24px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.06); margin-bottom:20px; }
+  .question-card h2 { font-size:24px; font-weight:800; line-height:1.4; }
+  .question-card .math-problem { font-size:46px; font-weight:900; color:var(--blue); margin:14px 0; letter-spacing:2px; }
+  .hint-text { font-size:14px; color:var(--text-light); margin-top:6px; font-weight:600; }
+  .anna-mode .question-card h2 { font-size:28px; }
+  .anna-mode .question-card .math-problem { font-size:54px; }
+  .anna-mode .option-btn { font-size:24px; min-height:78px; }
+  .options-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .option-btn { background:var(--card); border:3px solid #E2E8F0; border-radius:18px; padding:18px 14px; font-size:19px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:all 0.2s; color:var(--text); min-height:66px; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3; }
+  .option-btn:active { transform:scale(0.95); }
+  .option-btn.correct { background:#DCFCE7; border-color:var(--green); color:#166534; animation:bounce 0.5s ease; }
+  .option-btn.wrong { background:#FEE2E2; border-color:var(--red); color:#991B1B; animation:shake 0.4s ease; }
+  .option-btn:not(.correct):not(.wrong):hover { border-color:var(--purple); background:#FAF5FF; }
+  .feedback { text-align:center; padding:14px; border-radius:16px; margin-top:14px; font-size:20px; font-weight:800; animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+  .feedback.correct { background:#DCFCE7; color:#166534; }
+  .feedback.wrong { background:#FEF3C7; color:#92400E; }
+  .streak-badge { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--orange),var(--yellow)); color:white; padding:6px 14px; border-radius:12px; font-size:14px; font-weight:800; margin-bottom:14px; animation:popIn 0.3s ease; }
+
+  /* Results */
+  .results { text-align:center; padding:36px 20px; animation:fadeIn 0.6s ease; }
+  .results-emoji { font-size:76px; animation:bounce 1s ease infinite; }
+  .results h2 { font-size:30px; font-weight:900; margin:14px 0 6px; }
+  .results p { font-size:17px; color:var(--text-light); font-weight:600; }
+  .score-display { background:var(--card); border-radius:24px; padding:28px; margin:20px 0; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+  .score-big { font-size:60px; font-weight:900; background:linear-gradient(135deg,var(--purple),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .score-label { font-size:15px; color:var(--text-light); font-weight:700; margin-top:4px; }
+  .stars-earned { font-size:38px; margin:14px 0; letter-spacing:6px; }
+  .btn-row { display:flex; gap:12px; margin-top:20px; justify-content:center; flex-wrap:wrap; }
+  .action-btn { padding:14px 28px; border-radius:16px; border:none; font-size:17px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:8px; }
+  .action-btn:active { transform:scale(0.95); }
+  .action-btn.primary { background:linear-gradient(135deg,var(--purple),var(--pink)); color:white; box-shadow:0 4px 15px rgba(192,132,252,0.3); }
+  .action-btn.secondary { background:#F1F5F9; color:var(--text); }
+
+  /* Confetti */
+  .confetti-container { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:200; overflow:hidden; }
+  .confetti-piece { position:absolute; width:12px; height:12px; border-radius:3px; animation:confetti 1.5s ease-out forwards; }
+
+  /* ═══ MEMORY MATCH ═══ */
+  .memory-grid { display:grid; gap:12px; margin-top:16px; }
+  .memory-grid.size-3 { grid-template-columns:repeat(3,1fr); }
+  .memory-grid.size-4 { grid-template-columns:repeat(4,1fr); }
+  .memory-card {
+    aspect-ratio:1;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    font-size:36px; font-weight:900;
+    color:white;
+    transition:all 0.3s;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    position:relative;
+    perspective:600px;
+  }
+  .memory-card:active { transform:scale(0.95); }
+  .memory-card.flipped, .memory-card.matched {
+    background:var(--card);
+    color:var(--text);
+    border:3px solid #E2E8F0;
+    animation:flipIn 0.3s ease;
+  }
+  .memory-card.matched {
+    border-color:var(--green);
+    background:#DCFCE7;
+    animation:pulse 0.5s ease;
+  }
+  .memory-card .card-back { font-size:28px; }
+  .memory-card .card-front { font-size:20px; font-weight:800; text-align:center; line-height:1.2; }
+  .memory-info { text-align:center; margin-bottom:16px; }
+  .memory-info .moves { font-size:18px; font-weight:800; color:var(--text); }
+  .memory-info .pairs-left { font-size:14px; color:var(--text-light); font-weight:600; margin-top:4px; }
+
+  /* ═══ SPEED CHALLENGE ═══ */
+  .speed-timer { text-align:center; margin-bottom:16px; }
+  .speed-timer .timer-display { font-size:48px; font-weight:900; color:var(--purple); }
+  .speed-timer .timer-display.urgent { animation:timerPulse 0.5s ease infinite; }
+  .speed-score-live { font-size:16px; font-weight:700; color:var(--text-light); margin-top:4px; }
+  .speed-start { text-align:center; padding:40px 20px; }
+  .speed-start h2 { font-size:28px; font-weight:900; margin-bottom:12px; }
+  .speed-start p { font-size:16px; color:var(--text-light); font-weight:600; margin-bottom:24px; }
+
+  /* ═══ WORD SCRAMBLE / CREATIVE ═══ */
+  .scramble-area { text-align:center; animation:fadeIn 0.4s ease; }
+  .scramble-word { font-size:42px; font-weight:900; color:var(--orange); letter-spacing:8px; margin:16px 0; }
+  .scramble-hint { font-size:15px; color:var(--text-light); font-weight:600; margin-bottom:16px; }
+  .letter-slots { display:flex; justify-content:center; gap:8px; margin:16px 0; flex-wrap:wrap; }
+  .letter-slot {
+    width:50px; height:56px;
+    border:3px dashed #CBD5E1;
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; font-weight:900;
+    color:var(--text);
+    transition:all 0.2s;
+    background:var(--card);
+  }
+  .letter-slot.filled { border-style:solid; border-color:var(--purple); background:#FAF5FF; animation:letterPop 0.3s ease; }
+  .letter-slot.correct-slot { border-color:var(--green); background:#DCFCE7; }
+  .letter-slot.wrong-slot { border-color:var(--red); background:#FEE2E2; animation:shake 0.4s ease; }
+  .letter-choices { display:flex; justify-content:center; gap:8px; margin:12px 0; flex-wrap:wrap; }
+  .letter-btn {
+    width:50px; height:50px;
+    background:var(--card);
+    border:3px solid #E2E8F0;
+    border-radius:14px;
+    font-size:24px; font-weight:900;
+    font-family:'Nunito',sans-serif;
+    cursor:pointer;
+    transition:all 0.2s;
+    color:var(--text);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .letter-btn:active { transform:scale(0.9); }
+  .letter-btn:hover { border-color:var(--purple); background:#FAF5FF; }
+  .letter-btn.used { opacity:0.3; pointer-events:none; }
+
+  /* ═══ DRAWING / COLORING ═══ */
+  .drawing-area { text-align:center; animation:fadeIn 0.4s ease; }
+  .canvas-container { position:relative; display:inline-block; margin:16px 0; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+  .canvas-container canvas { display:block; border-radius:20px; background:white; touch-action:none; }
+  .color-palette { display:flex; justify-content:center; gap:10px; margin:12px 0; flex-wrap:wrap; }
+  .color-btn {
+    width:40px; height:40px;
+    border-radius:50%;
+    border:3px solid transparent;
+    cursor:pointer;
+    transition:all 0.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  }
+  .color-btn:active { transform:scale(0.9); }
+  .color-btn.selected { border-color:var(--text); transform:scale(1.15); box-shadow:0 4px 12px rgba(0,0,0,0.25); }
+  .brush-sizes { display:flex; justify-content:center; gap:12px; margin:8px 0; align-items:center; }
+  .brush-btn {
+    background:var(--card);
+    border:2px solid #E2E8F0;
+    border-radius:12px;
+    padding:8px 16px;
+    font-size:13px; font-weight:700;
+    font-family:'Nunito',sans-serif;
+    cursor:pointer;
+    transition:all 0.2s;
+    color:var(--text);
+  }
+  .brush-btn.selected { border-color:var(--purple); background:#FAF5FF; }
+  .drawing-prompt { background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+  .drawing-prompt h3 { font-size:20px; font-weight:800; }
+  .drawing-prompt p { font-size:14px; color:var(--text-light); font-weight:600; margin-top:4px; }
+
+  /* ═══ LEARN MODE ═══ */
+  .learn-area { text-align:center; animation:fadeIn 0.4s ease; }
+  .learn-big-char {
+    font-size:140px; font-weight:900; line-height:1;
+    margin:16px 0;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    cursor:pointer;
+  }
+  .learn-word { font-size:24px; font-weight:800; color:var(--text); margin:8px 0; }
+  .learn-emoji { font-size:64px; margin:8px 0; animation:float 3s ease-in-out infinite; }
+  .learn-desc { font-size:16px; color:var(--text-light); font-weight:600; margin:4px 0 16px; }
+  .speak-btn {
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    color:white; border:none; border-radius:20px;
+    padding:14px 32px; font-size:20px; font-weight:800;
+    font-family:'Nunito',sans-serif; cursor:pointer;
+    transition:all 0.2s; margin:8px;
+    display:inline-flex; align-items:center; gap:8px;
+    box-shadow:0 4px 15px rgba(96,165,250,0.3);
+  }
+  .speak-btn:active { transform:scale(0.95); }
+  .speak-btn.big { padding:18px 40px; font-size:24px; }
+  .learn-nav { display:flex; justify-content:center; gap:12px; margin-top:20px; }
+  .learn-dots { display:flex; justify-content:center; gap:6px; margin:16px 0; }
+  .learn-dot { width:10px; height:10px; border-radius:50%; background:#E2E8F0; transition:all 0.2s; }
+  .learn-dot.active { background:var(--purple); transform:scale(1.3); }
+  .learn-dot.done { background:var(--green); }
+
+  /* ═══ LETTER TRACING ═══ */
+  .trace-area { text-align:center; animation:fadeIn 0.4s ease; }
+  .trace-canvas-wrap { position:relative; display:inline-block; margin:12px 0; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+  .trace-canvas-wrap canvas { display:block; border-radius:20px; touch-action:none; }
+  .trace-letter-label { font-size:24px; font-weight:800; color:var(--text); margin:8px 0; }
+  .trace-counter { font-size:16px; font-weight:700; color:var(--text-light); margin-bottom:8px; }
+
+  @media (max-width:600px) {
+    .container { padding:16px; }
+    .activity-grid, .player-grid { gap:12px; }
+    .player-card { padding:24px 14px; }
+    .player-avatar { font-size:52px; }
+    .player-name { font-size:22px; }
+    .activity-card { padding:20px 12px; }
+    .activity-card .act-icon { font-size:36px; }
+    .activity-card .act-name { font-size:16px; }
+    .question-card h2 { font-size:20px; }
+    .question-card .math-problem { font-size:36px; }
+    .option-btn { font-size:17px; padding:14px 10px; }
+    .options-grid { gap:10px; }
+    .memory-card { font-size:28px; }
+    .memory-card .card-front { font-size:16px; }
+    .letter-slot, .letter-btn { width:42px; height:48px; font-size:22px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ═══ PLAYERS ═══
+const players = {
+  emma: { name:'Emma', age:7, emoji:'👩‍🎓', color:'#C084FC' },
+  anna: { name:'Anna', age:4, emoji:'🧸', color:'#FF6B9D' }
+};
+
+// ═══ STATE ═══
+let state = {
+  screen:'playerSelect', player:null, activity:null,
+  questions:[], currentQ:0, score:0, streak:0, answered:false,
+  stars:{ emma:0, anna:0 },
+  // Memory
+  memCards:[], memFlipped:[], memMatched:[], memMoves:0, memLocked:false,
+  // Speed
+  speedTimer:null, speedTimeLeft:0, speedScore:0, speedStarted:false,
+  // Scramble
+  scrambleWord:'', scrambleLetters:[], scrambleSlots:[], scrambleIdx:0, scrambleQ:0, scrambleWords:[],
+  // Drawing
+  drawColor:'#1E293B', drawSize:8, drawPrompt:'',
+  // Prevent double star awarding on re-render
+  starsAwarded:false
+};
+
+try {
+  const saved = JSON.parse(localStorage.getItem('studyBuddyStars2') || '{}');
+  if (saved.emma !== undefined) state.stars.emma = saved.emma;
+  if (saved.anna !== undefined) state.stars.anna = saved.anna;
+} catch(e) {}
+
+function saveStars() { try { localStorage.setItem('studyBuddyStars2', JSON.stringify(state.stars)); } catch(e) {} }
+function cs() { return state.player ? state.stars[state.player] : 0; }
+
+// ═══ QUESTION BANKS ═══
+const annamath = [
+  {display:'1 + 1 = ?',answer:2,options:[1,2,3,4]},{display:'2 + 1 = ?',answer:3,options:[2,3,4,1]},
+  {display:'1 + 2 = ?',answer:3,options:[3,4,2,1]},{display:'2 + 2 = ?',answer:4,options:[3,4,5,2]},
+  {display:'3 + 1 = ?',answer:4,options:[4,3,5,2]},{display:'1 + 3 = ?',answer:4,options:[4,5,3,2]},
+  {display:'2 + 3 = ?',answer:5,options:[4,5,6,3]},{display:'3 + 2 = ?',answer:5,options:[5,4,6,3]},
+  {display:'4 + 1 = ?',answer:5,options:[5,4,6,3]},{display:'1 + 4 = ?',answer:5,options:[5,6,4,3]},
+  {display:'3 + 3 = ?',answer:6,options:[5,6,7,4]},{display:'5 + 1 = ?',answer:6,options:[5,6,7,4]},
+  {display:'5 - 1 = ?',answer:4,options:[3,4,5,2]},{display:'4 - 1 = ?',answer:3,options:[2,3,4,1]},
+  {display:'3 - 1 = ?',answer:2,options:[1,2,3,0]},{display:'5 - 2 = ?',answer:3,options:[2,3,4,1]},
+  {display:'4 - 2 = ?',answer:2,options:[1,2,3,0]},{display:'4 + 2 = ?',answer:6,options:[5,6,7,4]},
+  {display:'2 + 0 = ?',answer:2,options:[0,1,2,3]},{display:'3 + 0 = ?',answer:3,options:[0,2,3,4]},
+];
+const annareading = [
+  {q:'What letter does "Apple" start with?',visual:'🍎',answer:'A',options:['A','B','P','E']},
+  {q:'What letter does "Ball" start with?',visual:'⚽',answer:'B',options:['D','B','P','A']},
+  {q:'What letter does "Cat" start with?',visual:'🐱',answer:'C',options:['K','S','C','A']},
+  {q:'What letter does "Dog" start with?',visual:'🐶',answer:'D',options:['B','D','G','P']},
+  {q:'What letter does "Fish" start with?',visual:'🐟',answer:'F',options:['F','P','S','H']},
+  {q:'What letter does "Sun" start with?',visual:'☀️',answer:'S',options:['S','Z','C','U']},
+  {q:'What letter does "Moon" start with?',visual:'🌙',answer:'M',options:['N','M','W','O']},
+  {q:'Which is the correct spelling?',visual:'🐱',answer:'CAT',options:['CAT','KAT','CET','KET'],hint:'A furry pet that says meow'},
+  {q:'Which is the correct spelling?',visual:'🐶',answer:'DOG',options:['DOG','DAG','DOJ','DUG'],hint:'A pet that barks'},
+  {q:'Which is the correct spelling?',visual:'☀️',answer:'SUN',options:['SON','SUN','SAN','SIN'],hint:'Shines in the sky'},
+  {q:'What rhymes with "cat"?',visual:'🐱',answer:'hat',options:['hat','cup','dog','car']},
+  {q:'What rhymes with "fun"?',visual:'🎉',answer:'sun',options:['fan','sun','fog','cup']},
+  {q:'What color is the sky?',visual:'🌤️',answer:'Blue',options:['Red','Blue','Green','Yellow']},
+  {q:'How many legs does a cat have?',visual:'🐱',answer:'4',options:['2','3','4','6']},
+  {q:'What animal says "Moo"?',visual:'🔊',answer:'Cow',options:['Dog','Cat','Cow','Bird']},
+  {q:'What rhymes with "dog"?',visual:'🐶',answer:'log',options:['log','dig','cup','hat']},
+  {q:'Which is the correct spelling?',visual:'🚒',answer:'RED',options:['RED','RID','RAD','ROD'],hint:'Color of a fire truck'},
+  {q:'Which letter comes first: A or B?',visual:'🔤',answer:'A',options:['A','B','C','D']},
+];
+const emmamath = [
+  {display:'12 + 15 = ?',answer:27,options:[25,27,29,23]},{display:'34 - 18 = ?',answer:16,options:[14,16,18,12]},
+  {display:'6 × 4 = ?',answer:24,options:[20,22,24,28]},{display:'45 + 27 = ?',answer:72,options:[70,72,68,74]},
+  {display:'8 × 3 = ?',answer:24,options:[21,24,27,18]},{display:'56 - 29 = ?',answer:27,options:[25,27,29,31]},
+  {display:'7 × 5 = ?',answer:35,options:[30,35,40,25]},{display:'63 + 19 = ?',answer:82,options:[78,80,82,84]},
+  {display:'9 × 6 = ?',answer:54,options:[48,54,56,63]},{display:'81 - 37 = ?',answer:44,options:[42,44,46,48]},
+  {display:'4 × 8 = ?',answer:32,options:[28,30,32,36]},{display:'50 - 24 = ?',answer:26,options:[24,26,28,22]},
+  {display:'7 × 7 = ?',answer:49,options:[42,47,49,56]},{display:'38 + 45 = ?',answer:83,options:[79,81,83,85]},
+  {display:'6 × 9 = ?',answer:54,options:[45,48,54,56]},{display:'25 + 36 = ?',answer:61,options:[59,61,63,51]},
+  {display:'70 - 43 = ?',answer:27,options:[23,25,27,33]},{display:'5 × 7 = ?',answer:35,options:[30,35,40,45]},
+  {display:'48 + 35 = ?',answer:83,options:[73,78,83,85]},{display:'3 × 9 = ?',answer:27,options:[24,27,30,21]},
+];
+const emmareading = [
+  {q:'What does "enormous" mean?',answer:'Very big',options:['Very small','Very big','Very fast','Very quiet']},
+  {q:'What does "ancient" mean?',answer:'Very old',options:['Very new','Very old','Very tall','Very cold']},
+  {q:'Choose the correct sentence:',answer:'She is reading a book.',options:['She is reading a book.','She are reading a book.','She am reading a book.','She be reading a book.']},
+  {q:'What does "courage" mean?',answer:'Bravery',options:['Sadness','Bravery','Hunger','Sleepiness']},
+  {q:'"The birds ___ singing."',answer:'are',options:['is','are','am','be']},
+  {q:'What is a synonym for "happy"?',answer:'Joyful',options:['Angry','Joyful','Tired','Scared']},
+  {q:'Which is a complete sentence?',answer:'The cat sat on the mat.',options:['Running fast.','The cat sat on the mat.','Very beautiful.','Because it rained.']},
+  {q:'What is the opposite of "brave"?',answer:'Cowardly',options:['Strong','Cowardly','Smart','Kind']},
+  {q:'"Yesterday I ___ to school."',answer:'went',options:['go','went','goed','going']},
+  {q:'What does "transparent" mean?',answer:'See-through',options:['Dark','See-through','Heavy','Colorful']},
+  {q:'Which uses a comma correctly?',answer:'I like cats, dogs, and birds.',options:['I like cats, dogs, and birds.','I, like cats dogs and birds.','I like, cats dogs and birds.','I like cats dogs, and, birds.']},
+  {q:'What does "peculiar" mean?',answer:'Strange',options:['Beautiful','Strange','Normal','Loud']},
+  {q:'What does "furious" mean?',answer:'Very angry',options:['Very happy','Very angry','Very tired','Very hungry']},
+  {q:'What is the plural of "child"?',answer:'children',options:['childs','children','childen','childrens']},
+  {q:'What does "fragile" mean?',answer:'Easy to break',options:['Very strong','Easy to break','Very heavy','Very large']},
+  {q:'What is the past tense of "run"?',answer:'ran',options:['runned','ran','running','runs']},
+  {q:'What does "journey" mean?',answer:'A trip',options:['A meal','A trip','A song','A game']},
+  {q:'What rhymes with "cake"?',answer:'lake',options:['luck','lock','lake','lick']},
+];
+
+// Memory match data
+const annaMemory = [
+  {front:'🐱',match:'CAT'},{front:'🐶',match:'DOG'},{front:'🐟',match:'FISH'},
+  {front:'🌞',match:'SUN'},{front:'🌙',match:'MOON'},{front:'⭐',match:'STAR'},
+  {front:'🍎',match:'APPLE'},{front:'🌈',match:'RAINBOW'},{front:'🦋',match:'BUTTERFLY'},
+];
+const emmaMemory = [
+  {front:'Enormous',match:'Very Big'},{front:'Ancient',match:'Very Old'},{front:'Courage',match:'Bravery'},
+  {front:'Furious',match:'Very Angry'},{front:'Peculiar',match:'Strange'},{front:'Transparent',match:'See-through'},
+  {front:'Fragile',match:'Breakable'},{front:'Journey',match:'Trip'},{front:'Joyful',match:'Happy'},
+];
+
+// Scramble words
+const annaScrambleWords = [
+  {word:'CAT',hint:'A pet that purrs'},{word:'DOG',hint:'A pet that barks'},{word:'SUN',hint:'Bright in the sky'},
+  {word:'RED',hint:'Color of an apple'},{word:'BIG',hint:'Not small'},{word:'HAT',hint:'You wear it on your head'},
+  {word:'CUP',hint:'You drink from it'},{word:'BED',hint:'You sleep in it'},{word:'FUN',hint:'Having a good time'},
+  {word:'RUN',hint:'Moving fast with your legs'},
+];
+const emmaScrambleWords = [
+  {word:'BRAVE',hint:'Not afraid'},{word:'HAPPY',hint:'Feeling good'},{word:'OCEAN',hint:'Big body of water'},
+  {word:'PLANET',hint:'Earth is one'},{word:'FRIEND',hint:'Someone you like'},{word:'GARDEN',hint:'Where flowers grow'},
+  {word:'CASTLE',hint:'A king lives here'},{word:'RAINBOW',hint:'Colors in the sky after rain'},
+  {word:'DRAGON',hint:'A fire-breathing creature'},{word:'PUZZLE',hint:'Pieces fit together'},
+];
+
+// ═══ SHAPES & COLORS ═══
+const annaShapes = [
+  {q:'What shape is a ball?',visual:'⚽',answer:'Circle',options:['Circle','Square','Triangle','Star']},
+  {q:'How many sides does a triangle have?',visual:'🔺',answer:'3',options:['2','3','4','5']},
+  {q:'What shape is a box?',visual:'📦',answer:'Square',options:['Circle','Triangle','Square','Oval']},
+  {q:'What color is a banana?',visual:'🍌',answer:'Yellow',options:['Red','Yellow','Blue','Green']},
+  {q:'What color is grass?',visual:'🌿',answer:'Green',options:['Blue','Yellow','Green','Red']},
+  {q:'What shape has 4 equal sides?',visual:'⬛',answer:'Square',options:['Triangle','Circle','Square','Oval']},
+  {q:'What color do you get mixing red and yellow?',visual:'🔴➕🟡',answer:'Orange',options:['Purple','Orange','Green','Pink']},
+  {q:'What shape is a pizza slice?',visual:'🍕',answer:'Triangle',options:['Square','Circle','Triangle','Rectangle']},
+  {q:'What color is the sun?',visual:'☀️',answer:'Yellow',options:['Red','Blue','Yellow','Green']},
+  {q:'What shape is a door?',visual:'🚪',answer:'Rectangle',options:['Circle','Triangle','Square','Rectangle']},
+  {q:'What color are strawberries?',visual:'🍓',answer:'Red',options:['Red','Blue','Green','Yellow']},
+  {q:'How many corners does a circle have?',visual:'⭕',answer:'0',options:['0','1','2','4']},
+  {q:'How many points does a star have?',visual:'⭐',answer:'5',options:['3','4','5','6']},
+  {q:'What color is the ocean?',visual:'🌊',answer:'Blue',options:['Green','Blue','Red','Yellow']},
+  {q:'What shape is an egg?',visual:'🥚',answer:'Oval',options:['Circle','Oval','Square','Triangle']},
+  {q:'What color is snow?',visual:'❄️',answer:'White',options:['Blue','White','Yellow','Gray']},
+];
+const emmaShapes = [
+  {q:'How many sides does a hexagon have?',answer:'6',options:['5','6','7','8']},
+  {q:'What is a shape with 8 sides called?',answer:'Octagon',options:['Hexagon','Octagon','Pentagon','Decagon']},
+  {q:'How many degrees are in a right angle?',answer:'90',options:['45','90','180','360']},
+  {q:'What shape has all sides equal and 4 right angles?',answer:'Square',options:['Rectangle','Rhombus','Square','Trapezoid']},
+  {q:'What do you call a 3D shape like a ball?',answer:'Sphere',options:['Circle','Sphere','Cylinder','Cube']},
+  {q:'How many faces does a cube have?',answer:'6',options:['4','5','6','8']},
+  {q:'What color do you get mixing blue and yellow?',answer:'Green',options:['Purple','Green','Orange','Brown']},
+  {q:'What is a shape with 5 sides called?',answer:'Pentagon',options:['Hexagon','Octagon','Pentagon','Quadrilateral']},
+  {q:'What are the 3 primary colors?',answer:'Red, Blue, Yellow',options:['Red, Blue, Yellow','Red, Green, Blue','Red, Yellow, Green','Blue, Yellow, Purple']},
+  {q:'How many degrees in a full circle?',answer:'360',options:['90','180','270','360']},
+  {q:'What 3D shape is a can of soup?',answer:'Cylinder',options:['Cube','Sphere','Cylinder','Cone']},
+  {q:'What do you call a triangle with all sides equal?',answer:'Equilateral',options:['Isosceles','Equilateral','Scalene','Right']},
+  {q:'What color is made by mixing red and blue?',answer:'Purple',options:['Green','Orange','Purple','Brown']},
+  {q:'How many vertices does a triangle have?',answer:'3',options:['2','3','4','5']},
+  {q:'What shape is a stop sign?',answer:'Octagon',options:['Hexagon','Circle','Square','Octagon']},
+  {q:'What is the line across the middle of a circle called?',answer:'Diameter',options:['Radius','Diameter','Circumference','Chord']},
+];
+
+// ═══ SCIENCE & NATURE ═══
+const annaScience = [
+  {q:'What do plants need to grow?',visual:'🌱',answer:'Water and sun',options:['Just water','Water and sun','Just sun','Nothing']},
+  {q:'How many legs does a spider have?',visual:'🕷️',answer:'8',options:['4','6','8','10']},
+  {q:'What falls from clouds when it rains?',visual:'🌧️',answer:'Water',options:['Sand','Water','Snow','Rocks']},
+  {q:'Where does a fish live?',visual:'🐟',answer:'Water',options:['Trees','Water','Underground','Sky']},
+  {q:'What season comes after summer?',visual:'🍂',answer:'Fall',options:['Winter','Spring','Fall','Summer']},
+  {q:'What do caterpillars turn into?',visual:'🐛',answer:'Butterflies',options:['Birds','Butterflies','Bees','Spiders']},
+  {q:'What is the biggest animal on land?',visual:'🐘',answer:'Elephant',options:['Lion','Elephant','Giraffe','Bear']},
+  {q:'How many legs does a bird have?',visual:'🐦',answer:'2',options:['2','4','6','0']},
+  {q:'What gives us light during the day?',visual:'☀️',answer:'The Sun',options:['The Moon','Stars','The Sun','Clouds']},
+  {q:'Which animal has a trunk?',visual:'🐘',answer:'Elephant',options:['Lion','Monkey','Elephant','Dog']},
+  {q:'What do bees make?',visual:'🐝',answer:'Honey',options:['Milk','Honey','Bread','Juice']},
+  {q:'What season is the coldest?',visual:'❄️',answer:'Winter',options:['Summer','Fall','Spring','Winter']},
+  {q:'What body part do we use to see?',visual:'👁️',answer:'Eyes',options:['Ears','Nose','Eyes','Mouth']},
+  {q:'What body part do we use to hear?',visual:'👂',answer:'Ears',options:['Eyes','Ears','Nose','Hands']},
+  {q:'Do fish breathe air or water?',visual:'🐟',answer:'Water',options:['Air','Water','Both','Neither']},
+  {q:'What is a baby dog called?',visual:'🐶',answer:'Puppy',options:['Kitten','Puppy','Cub','Calf']},
+];
+const emmaScience = [
+  {q:'Which planet is closest to the Sun?',answer:'Mercury',options:['Venus','Mercury','Earth','Mars']},
+  {q:'What gas do plants breathe in?',answer:'Carbon dioxide',options:['Oxygen','Nitrogen','Carbon dioxide','Hydrogen']},
+  {q:'How many planets are in our solar system?',answer:'8',options:['7','8','9','10']},
+  {q:'What is the largest organ in the human body?',answer:'Skin',options:['Heart','Brain','Skin','Liver']},
+  {q:'What do we call animals that eat only plants?',answer:'Herbivores',options:['Carnivores','Herbivores','Omnivores','Insects']},
+  {q:'What is H₂O commonly known as?',answer:'Water',options:['Salt','Water','Air','Sugar']},
+  {q:'Which planet is known as the Red Planet?',answer:'Mars',options:['Jupiter','Mars','Venus','Saturn']},
+  {q:'What causes day and night on Earth?',answer:'Earth spinning',options:['Moon moving','Earth spinning','Sun moving','Clouds']},
+  {q:'What force keeps us on the ground?',answer:'Gravity',options:['Magnetism','Gravity','Friction','Wind']},
+  {q:'What are the three states of matter?',answer:'Solid, liquid, gas',options:['Solid, liquid, gas','Hot, cold, warm','Big, medium, small','Hard, soft, squishy']},
+  {q:'What is the hardest natural substance?',answer:'Diamond',options:['Gold','Iron','Diamond','Platinum']},
+  {q:'Which planet has rings around it?',answer:'Saturn',options:['Mars','Jupiter','Saturn','Neptune']},
+  {q:'What type of animal is a frog?',answer:'Amphibian',options:['Mammal','Reptile','Amphibian','Fish']},
+  {q:'What part of the plant makes food from sunlight?',answer:'Leaves',options:['Roots','Stem','Leaves','Flowers']},
+  {q:'How many bones does an adult human have?',answer:'206',options:['106','206','306','150']},
+  {q:'What is the process plants use to make food called?',answer:'Photosynthesis',options:['Respiration','Photosynthesis','Digestion','Evaporation']},
+  {q:'Which ocean is the largest?',answer:'Pacific',options:['Atlantic','Indian','Pacific','Arctic']},
+  {q:'What are the layers of the Earth?',answer:'Crust, mantle, core',options:['Crust, mantle, core','Top, middle, bottom','Land, water, air','Rock, sand, dirt']},
+];
+
+// Drawing prompts
+const annaDrawPrompts = [
+  {title:'Draw a Happy Sun!',desc:'Draw a big yellow sun with a smiley face'},
+  {title:'Draw a Cat!',desc:'Draw your favorite cat'},
+  {title:'Draw a Rainbow!',desc:'Make a colorful rainbow in the sky'},
+  {title:'Draw a Flower!',desc:'Draw a pretty flower with petals'},
+  {title:'Draw Your Family!',desc:'Draw the people in your family'},
+  {title:'Draw a House!',desc:'Draw a house with a door and windows'},
+];
+const emmaDrawPrompts = [
+  {title:'Draw Your Dream Treehouse!',desc:'Design the coolest treehouse ever'},
+  {title:'Draw an Underwater Scene!',desc:'Draw fish, coral, and sea creatures'},
+  {title:'Draw a Space Adventure!',desc:'Draw rockets, planets, and stars'},
+  {title:'Design a Robot!',desc:'Create your own robot character'},
+  {title:'Draw a Fantasy Castle!',desc:'Design a magical castle with towers'},
+  {title:'Draw Your Favorite Animal!',desc:'Draw it in its natural habitat'},
+];
+
+// ═══ UTILITY ═══
+function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function pick(bank,n) { return shuffle(bank).slice(0,n); }
+
+function showConfetti() {
+  const c=document.createElement('div'); c.className='confetti-container'; document.body.appendChild(c);
+  const cols=['#FF6B9D','#C084FC','#60A5FA','#34D399','#FBBF24','#FB923C'];
+  for(let i=0;i<50;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'%';p.style.top='-10px';p.style.background=cols[Math.floor(Math.random()*cols.length)];p.style.animationDelay=Math.random()*0.8+'s';p.style.animationDuration=(1+Math.random())+'s';if(Math.random()>0.5)p.style.borderRadius='50%';c.appendChild(p);}
+  setTimeout(()=>c.remove(),3000);
+}
+
+// Emoji map for Anna's visual answer options
+const optEmoji = {
+  'Circle':'⭕','Square':'⬛','Triangle':'🔺','Star':'⭐','Oval':'🥚','Rectangle':'📏',
+  'Red':'🔴','Blue':'🔵','Green':'🟢','Yellow':'🟡','Orange':'🟠','Purple':'🟣','White':'⬜','Pink':'💗','Gray':'⚪',
+  'Elephant':'🐘','Lion':'🦁','Giraffe':'🦒','Bear':'🐻','Dog':'🐶','Cat':'🐱','Monkey':'🐵','Bird':'🐦',
+  'Butterflies':'🦋','Bees':'🐝','Spiders':'🕷️','Birds':'🐦','Cow':'🐄',
+  'Water':'💧','Trees':'🌳','Sky':'☁️','Underground':'🕳️',
+  'Winter':'❄️','Spring':'🌸','Fall':'🍂','Summer':'☀️',
+  'Eyes':'👁️','Ears':'👂','Nose':'👃','Mouth':'👄','Hands':'✋',
+  'Honey':'🍯','Milk':'🥛','Bread':'🍞','Juice':'🧃',
+  'The Sun':'☀️','The Moon':'🌙','Stars':'⭐','Clouds':'☁️',
+  'Puppy':'🐶','Kitten':'🐱','Cub':'🐻','Calf':'🐄',
+  'Water and sun':'💧☀️','Just water':'💧','Just sun':'☀️','Nothing':'❌',
+  'Sand':'🏖️','Snow':'❄️','Rocks':'🪨',
+};
+
+function speakQuestion() {
+  const q=state.questions[state.currentQ];
+  const txt=state.activity==='math'&&q.display?q.display.replace('×','times').replace('=',' equals ').replace('?','what?'):q.q;
+  speakText(txt);
+}
+
+function headerHTML(title, showBack=true, showStars=true) {
+  return `<div class="header"><div class="header-left">${showBack?'<button class="back-btn" onclick="goActivity()">←</button>':''}<h1>${title}</h1></div>${showStars?`<div class="stars-display">⭐ ${cs()}</div>`:''}</div>`;
+}
+
+// ═══ RENDER ═══
+function render() {
+  if(state.speedTimer) { clearInterval(state.speedTimer); state.speedTimer=null; }
+  const app=document.getElementById('app');
+  switch(state.screen) {
+    case 'playerSelect': renderPlayerSelect(app); break;
+    case 'activitySelect': renderActivitySelect(app); break;
+    case 'quiz': renderQuiz(app); break;
+    case 'results': renderResults(app); break;
+    case 'memory': renderMemory(app); break;
+    case 'speed': renderSpeed(app); break;
+    case 'scramble': renderScramble(app); break;
+    case 'drawing': renderDrawing(app); break;
+    case 'memoryWin': renderMemoryWin(app); break;
+    case 'speedResults': renderSpeedResults(app); break;
+    case 'scrambleResults': renderScrambleResults(app); break;
+    case 'learn': renderLearn(app); break;
+    case 'trace': renderTrace(app); break;
+  }
+}
+
+function renderPlayerSelect(app) {
+  app.innerHTML = `
+    ${headerHTML('Study Buddy',false,false)}
+    <div class="container">
+      <div class="player-select">
+        <div class="player-select-emoji">📚</div>
+        <h2>Who's Studying?</h2>
+        <p>Tap your name to start!</p>
+      </div>
+      <div class="player-grid">
+        <div class="player-card emma" onclick="selectPlayer('emma')">
+          <span class="player-avatar">👩‍🎓</span>
+          <div class="player-name">Emma</div>
+          <div class="player-age">Age 7</div>
+          <div class="player-stars-count">⭐ ${state.stars.emma} stars</div>
+        </div>
+        <div class="player-card anna" onclick="selectPlayer('anna')">
+          <span class="player-avatar">🧸</span>
+          <div class="player-name">Anna</div>
+          <div class="player-age">Age 4</div>
+          <div class="player-stars-count">⭐ ${state.stars.anna} stars</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderActivitySelect(app) {
+  const p=players[state.player];
+  const isAnna=state.player==='anna';
+  app.innerHTML = `
+    ${headerHTML(p.emoji+" "+p.name+"'s Study Time",true,true).replace('onclick="goActivity()"','onclick="goPlayerSelect()"')}
+    <div class="container">
+      <div class="welcome">
+        <div class="welcome-emoji">🎒</div>
+        <h2>Hi ${p.name}!</h2>
+        <p>Choose what you want to do!</p>
+      </div>
+      <div class="activity-grid">
+        <div class="activity-card c-blue" onclick="startQuiz('math')">
+          <span class="act-icon">🔢</span>
+          <div class="act-name">Math Quiz</div>
+          <div class="act-desc">${isAnna?'Counting & Adding':'Numbers & Times Tables'}</div>
+        </div>
+        <div class="activity-card c-green" onclick="startQuiz('reading')">
+          <span class="act-icon">📖</span>
+          <div class="act-name">Reading Quiz</div>
+          <div class="act-desc">${isAnna?'Letters & Words':'Vocab & Grammar'}</div>
+        </div>
+        ${isAnna?`
+        <div class="activity-card c-orange" onclick="startLearn('letters')">
+          <span class="act-icon">🔤</span>
+          <div class="act-name">Learn Letters</div>
+          <div class="act-desc">ABCs with sounds!</div>
+        </div>
+        <div class="activity-card c-purple" onclick="startLearn('numbers')">
+          <span class="act-icon">🔢</span>
+          <div class="act-name">Learn Numbers</div>
+          <div class="act-desc">Count 1-20 with sounds!</div>
+        </div>
+        <div class="activity-card c-pink" onclick="startLearn('shapes')">
+          <span class="act-icon">🔷</span>
+          <div class="act-name">Learn Shapes</div>
+          <div class="act-desc">Shapes & colors with sounds!</div>
+        </div>
+        <div class="activity-card c-blue" onclick="startTrace('letters')">
+          <span class="act-icon">✏️</span>
+          <div class="act-name">Trace Letters</div>
+          <div class="act-desc">Practice writing ABCs!</div>
+        </div>
+        <div class="activity-card c-green" onclick="startTrace('numbers')">
+          <span class="act-icon">✍️</span>
+          <div class="act-name">Trace Numbers</div>
+          <div class="act-desc">Practice writing 1-9!</div>
+        </div>`:''}
+        <div class="activity-card c-purple" onclick="startMemory()">
+          <span class="act-icon">🃏</span>
+          <div class="act-name">Memory Match</div>
+          <div class="act-desc">${isAnna?'Match Animals & Words':'Match Words & Meanings'}</div>
+        </div>
+        <div class="activity-card c-orange" onclick="startSpeed()">
+          <span class="act-icon">⚡</span>
+          <div class="act-name">Speed Challenge</div>
+          <div class="act-desc">${isAnna?'Quick Counting!':'Beat the Clock!'}</div>
+        </div>
+        <div class="activity-card c-pink" onclick="startQuiz('shapes')">
+          <span class="act-icon">🔷</span>
+          <div class="act-name">Shapes & Colors</div>
+          <div class="act-desc">${isAnna?'Learn shapes & colors':'Geometry & color theory'}</div>
+        </div>
+        <div class="activity-card c-green" onclick="startQuiz('science')">
+          <span class="act-icon">🔬</span>
+          <div class="act-name">Science & Nature</div>
+          <div class="act-desc">${isAnna?'Animals & weather':'Planets & the body'}</div>
+        </div>
+        <div class="activity-card c-pink" onclick="startScramble()">
+          <span class="act-icon">🔤</span>
+          <div class="act-name">Word Scramble</div>
+          <div class="act-desc">${isAnna?'Unscramble 3-letter words':'Unscramble big words'}</div>
+        </div>
+        <div class="activity-card c-blue" onclick="startDrawing()">
+          <span class="act-icon">🎨</span>
+          <div class="act-name">Free Draw</div>
+          <div class="act-desc">Draw & color anything!</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══ QUIZ ═══
+function renderQuiz(app) {
+  if(state.currentQ>=state.questions.length){state.screen='results';render();return;}
+  const q=state.questions[state.currentQ], p=players[state.player], isAnna=state.player==='anna';
+  const progress=(state.currentQ/state.questions.length)*100;
+  const subLabels={math:'🔢 Math',reading:'📖 Reading',shapes:'🔷 Shapes',science:'🔬 Science'};
+  const subLabel=subLabels[state.activity]||'📝 Quiz';
+  let qHTML='';
+  if(state.activity==='math'&&q.display){
+    qHTML=`<h2>What is...</h2><div class="math-problem">${q.display}</div>`;
+  } else {
+    if(isAnna&&q.visual){qHTML+=`<div style="font-size:80px;margin:8px 0;line-height:1;">${q.visual}</div>`;}
+    qHTML+=`<h2>${q.q}</h2>`;
+    if(q.hint)qHTML+=`<div class="hint-text">Hint: ${q.hint}</div>`;
+  }
+  if(isAnna){qHTML+=`<button class="speak-btn" onclick="speakQuestion()" style="margin-top:12px;">🔊 Hear Question</button>`;}
+  const streakHTML=state.streak>=3?`<div class="streak-badge">🔥 ${state.streak} in a row!</div>`:'';
+  const opts=shuffle([...q.options]);
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' '+subLabel)}
+    <div class="container ${isAnna?'anna-mode':''}">
+      <div class="quiz-area">${streakHTML}
+        <div class="question-counter">Question ${state.currentQ+1} of ${state.questions.length}</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+        <div class="question-card">${qHTML}</div>
+        <div class="options-grid">${opts.map(o=>{
+          const label=isAnna&&optEmoji[String(o)]?`<span style="font-size:28px;display:block;">${optEmoji[String(o)]}</span>${o}`:String(o);
+          return `<button class="option-btn" data-value="${String(o).replace(/"/g,'&quot;')}" onclick="checkAnswer(this)">${label}</button>`;
+        }).join('')}</div>
+        <div id="feedback"></div>
+      </div>
+    </div>`;
+  if(isAnna){setTimeout(()=>{speakQuestion();},400);}
+}
+
+function renderResults(app) {
+  const total=state.questions.length, pct=Math.round((state.score/total)*100);
+  const se=state.score>=total?3:state.score>=total*0.7?2:state.score>=total*0.4?1:0;
+  const p=players[state.player];
+  if(!state.starsAwarded){state.stars[state.player]+=se;saveStars();state.starsAwarded=true;}
+  let emoji,msg;
+  if(pct===100){emoji='🎉';msg=`Perfect, ${p.name}!`;showConfetti();}
+  else if(pct>=80){emoji='🌟';msg=`Great Job, ${p.name}!`;showConfetti();}
+  else if(pct>=60){emoji='😃';msg=`Good Work, ${p.name}!`;}
+  else if(pct>=40){emoji='💪';msg=`Keep Practicing, ${p.name}!`;}
+  else{emoji='😊';msg=`You'll Get It, ${p.name}!`;}
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' Results',false)}
+    <div class="container"><div class="results">
+      <div class="results-emoji">${emoji}</div><h2>${msg}</h2>
+      <p>${{math:'Math',reading:'Reading',shapes:'Shapes & Colors',science:'Science & Nature'}[state.activity]||'Quiz'} Quiz</p>
+      <div class="score-display"><div class="score-big">${state.score}/${total}</div><div class="score-label">Correct</div>
+      <div class="stars-earned">${'⭐'.repeat(se)}${'☆'.repeat(3-se)}</div><div class="score-label">+${se} stars</div></div>
+      <div class="btn-row"><button class="action-btn primary" onclick="retryQuiz()">🔄 Again</button><button class="action-btn secondary" onclick="goActivity()">📚 Activities</button><button class="action-btn secondary" onclick="goPlayerSelect()">🏠 Home</button></div>
+    </div></div>`;
+}
+
+// ═══ MEMORY MATCH ═══
+function renderMemory(app) {
+  const p=players[state.player], pairs=state.memCards.length/2;
+  const matchedPairs=state.memMatched.length/2;
+  const gridClass=state.player==='anna'?'size-3':'size-4';
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' 🃏 Memory Match')}
+    <div class="container">
+      <div class="memory-info">
+        <div class="moves">Moves: ${state.memMoves}</div>
+        <div class="pairs-left">${matchedPairs}/${pairs} pairs found</div>
+      </div>
+      <div class="memory-grid ${gridClass}">
+        ${state.memCards.map((card,i)=>{
+          const isFlipped=state.memFlipped.includes(i);
+          const isMatched=state.memMatched.includes(i);
+          if(isFlipped||isMatched){
+            return `<div class="memory-card ${isMatched?'matched':'flipped'}"><div class="card-front">${card.display}</div></div>`;
+          } else {
+            return `<div class="memory-card" onclick="flipCard(${i})"><div class="card-back">❓</div></div>`;
+          }
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderMemoryWin(app) {
+  const p=players[state.player];
+  const pairs=state.memCards.length/2;
+  const se=state.memMoves<=pairs*2?3:state.memMoves<=pairs*3?2:1;
+  if(!state.starsAwarded){state.stars[state.player]+=se;saveStars();showConfetti();state.starsAwarded=true;}
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' 🃏 Complete!',false)}
+    <div class="container"><div class="results">
+      <div class="results-emoji">🎉</div><h2>All Matches Found!</h2><p>Great memory, ${p.name}!</p>
+      <div class="score-display"><div class="score-big">${state.memMoves}</div><div class="score-label">Moves</div>
+      <div class="stars-earned">${'⭐'.repeat(se)}${'☆'.repeat(3-se)}</div><div class="score-label">+${se} stars</div></div>
+      <div class="btn-row"><button class="action-btn primary" onclick="startMemory()">🔄 Again</button><button class="action-btn secondary" onclick="goActivity()">📚 Activities</button></div>
+    </div></div>`;
+}
+
+// ═══ SPEED CHALLENGE ═══
+function renderSpeed(app) {
+  const p=players[state.player], isAnna=state.player==='anna';
+  if(!state.speedStarted) {
+    app.innerHTML=`
+      ${headerHTML(p.emoji+' ⚡ Speed Challenge')}
+      <div class="container"><div class="speed-start">
+        <h2>⚡ Speed Challenge!</h2>
+        <p>Answer as many ${isAnna?'counting':'math'} questions as you can in ${isAnna?'30':'45'} seconds!</p>
+        <button class="action-btn primary" onclick="beginSpeed()" style="margin:0 auto;">🚀 Start!</button>
+      </div></div>`;
+    return;
+  }
+  const q=state.questions[state.currentQ];
+  const urgent=state.speedTimeLeft<=10;
+  let qHTML='';
+  if(q){ qHTML=`<h2>What is...</h2><div class="math-problem">${q.display}</div>`; }
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' ⚡ Speed!')}
+    <div class="container ${isAnna?'anna-mode':''}">
+      <div class="quiz-area">
+        <div class="speed-timer"><div class="timer-display ${urgent?'urgent':''}">${state.speedTimeLeft}s</div>
+        <div class="speed-score-live">Score: ${state.speedScore}</div></div>
+        ${q?`<div class="question-card">${qHTML}</div>
+        <div class="options-grid">${shuffle([...q.options]).map(o=>`<button class="option-btn" data-value="${o}" onclick="speedAnswer(this)">${o}</button>`).join('')}</div>`:''}
+        <div id="feedback"></div>
+      </div>
+    </div>`;
+}
+
+function renderSpeedResults(app) {
+  const p=players[state.player];
+  const se=state.speedScore>=10?3:state.speedScore>=6?2:state.speedScore>=3?1:0;
+  if(!state.starsAwarded){state.stars[state.player]+=se;saveStars();if(state.speedScore>=6)showConfetti();state.starsAwarded=true;}
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' ⚡ Time\'s Up!',false)}
+    <div class="container"><div class="results">
+      <div class="results-emoji">${state.speedScore>=10?'🏆':state.speedScore>=6?'🌟':'⚡'}</div>
+      <h2>${state.speedScore>=10?'Incredible!':state.speedScore>=6?'Great Speed!':'Nice Try!'}</h2><p>Speed Challenge</p>
+      <div class="score-display"><div class="score-big">${state.speedScore}</div><div class="score-label">Correct Answers</div>
+      <div class="stars-earned">${'⭐'.repeat(se)}${'☆'.repeat(3-se)}</div><div class="score-label">+${se} stars</div></div>
+      <div class="btn-row"><button class="action-btn primary" onclick="startSpeed()">🔄 Again</button><button class="action-btn secondary" onclick="goActivity()">📚 Activities</button></div>
+    </div></div>`;
+}
+
+// ═══ WORD SCRAMBLE ═══
+function renderScramble(app) {
+  const p=players[state.player];
+  if(state.scrambleQ>=state.scrambleWords.length){state.screen='scrambleResults';render();return;}
+  const w=state.scrambleWords[state.scrambleQ];
+  const progress=(state.scrambleQ/state.scrambleWords.length)*100;
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' 🔤 Word Scramble')}
+    <div class="container"><div class="scramble-area">
+      <div class="question-counter">Word ${state.scrambleQ+1} of ${state.scrambleWords.length}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      <div class="question-card">
+        <h2>Unscramble this word!</h2>
+        <div class="scramble-word">${state.scrambleLetters.join(' ')}</div>
+        <div class="scramble-hint">Hint: ${w.hint}</div>
+      </div>
+      <div class="letter-slots">${state.scrambleSlots.map((l,i)=>`<div class="letter-slot ${l?'filled':''}" onclick="removeSlotLetter(${i})">${l||''}</div>`).join('')}</div>
+      <div class="letter-choices" id="letterChoices">${state.scrambleLetters.map((l,i)=>`<button class="letter-btn ${state.scrambleSlots.includes(l)&&countInSlots(l)>=countInScrambled(l)?'':''}${isLetterUsed(i)?'used':''}" onclick="pickLetter(${i})">${l}</button>`).join('')}</div>
+      <div style="margin-top:12px;"><button class="action-btn primary" onclick="checkScramble()" style="margin:0 auto;">Check ✓</button></div>
+      <div id="feedback"></div>
+    </div></div>`;
+}
+
+function renderScrambleResults(app) {
+  const p=players[state.player];
+  const total=state.scrambleWords.length;
+  const pct=Math.round((state.score/total)*100);
+  const se=state.score>=total?3:state.score>=total*0.7?2:state.score>=total*0.4?1:0;
+  if(!state.starsAwarded){state.stars[state.player]+=se;saveStars();if(pct>=80)showConfetti();state.starsAwarded=true;}
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' 🔤 Done!',false)}
+    <div class="container"><div class="results">
+      <div class="results-emoji">${pct>=80?'🎉':'💪'}</div><h2>${pct>=80?'Amazing, '+p.name+'!':'Keep Going, '+p.name+'!'}</h2><p>Word Scramble</p>
+      <div class="score-display"><div class="score-big">${state.score}/${total}</div><div class="score-label">Words Unscrambled</div>
+      <div class="stars-earned">${'⭐'.repeat(se)}${'☆'.repeat(3-se)}</div><div class="score-label">+${se} stars</div></div>
+      <div class="btn-row"><button class="action-btn primary" onclick="startScramble()">🔄 Again</button><button class="action-btn secondary" onclick="goActivity()">📚 Activities</button></div>
+    </div></div>`;
+}
+
+// ═══ DRAWING ═══
+function renderDrawing(app) {
+  const p=players[state.player];
+  const prompt=state.drawPrompt;
+  const colors=['#1E293B','#EF4444','#F97316','#EAB308','#22C55E','#3B82F6','#8B5CF6','#EC4899','#06B6D4','#FFFFFF'];
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' 🎨 Free Draw')}
+    <div class="container"><div class="drawing-area">
+      <div class="drawing-prompt"><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
+      <div class="canvas-container"><canvas id="drawCanvas" width="380" height="380"></canvas></div>
+      <div class="color-palette">${colors.map(c=>`<div class="color-btn ${state.drawColor===c?'selected':''}" data-color="${c}" style="background:${c};${c==='#FFFFFF'?'border:2px solid #CBD5E1;':''}" onclick="setColor('${c}')"></div>`).join('')}</div>
+      <div class="brush-sizes">
+        <button class="brush-btn ${state.drawSize===3?'selected':''}" onclick="setSize(3)">Small</button>
+        <button class="brush-btn ${state.drawSize===8?'selected':''}" onclick="setSize(8)">Medium</button>
+        <button class="brush-btn ${state.drawSize===16?'selected':''}" onclick="setSize(16)">Large</button>
+        <button class="brush-btn" onclick="clearCanvas()">🗑️ Clear</button>
+        <button class="brush-btn" onclick="newDrawPrompt()">🎲 New</button>
+      </div>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="action-btn primary" onclick="finishDrawing()">✅ Done!</button>
+      </div>
+    </div></div>`;
+  setupCanvas();
+}
+
+// ═══ ACTIONS ═══
+function selectPlayer(player) { state.player=player; state.screen='activitySelect'; render(); }
+function goPlayerSelect() { state.screen='playerSelect'; state.player=null; render(); }
+function goActivity() { state.screen='activitySelect'; render(); }
+
+function startQuiz(subject) {
+  state.activity=subject;
+  let bank,count;
+  const isAnna=state.player==='anna';
+  if(subject==='math'){bank=isAnna?annamath:emmamath;}
+  else if(subject==='reading'){bank=isAnna?annareading:emmareading;}
+  else if(subject==='shapes'){bank=isAnna?annaShapes:emmaShapes;}
+  else if(subject==='science'){bank=isAnna?annaScience:emmaScience;}
+  count=isAnna?6:8;
+  state.questions=pick(bank,count);state.currentQ=0;state.score=0;state.streak=0;state.answered=false;state.starsAwarded=false;
+  state.screen='quiz';render();
+}
+
+function retryQuiz() { startQuiz(state.activity); }
+
+function checkAnswer(btn) {
+  if(state.answered)return;state.answered=true;
+  const q=state.questions[state.currentQ],sel=btn.getAttribute('data-value'),cor=String(q.answer),ok=sel===cor;
+  document.querySelectorAll('.option-btn').forEach(b=>{b.disabled=true;if(b.getAttribute('data-value')===cor)b.classList.add('correct');else if(b===btn&&!ok)b.classList.add('wrong');});
+  const fb=document.getElementById('feedback');
+  if(ok){state.score++;state.streak++;const m=state.player==='anna'?['Yay! 🎉','You did it! ⭐','Amazing! 🌈','So smart! 💖']:['Awesome! 🎉','Correct! ⭐','Great job! 🌟','Brilliant! 🧠'];fb.innerHTML=`<div class="feedback correct">${m[Math.floor(Math.random()*m.length)]}</div>`;}
+  else{state.streak=0;fb.innerHTML=`<div class="feedback wrong">Answer: ${q.answer} 💡</div>`;}
+  setTimeout(()=>{state.currentQ++;state.answered=false;render();},state.player==='anna'?2000:1500);
+}
+
+// Memory
+function startMemory() {
+  const data=state.player==='anna'?pick(annaMemory,4):pick(emmaMemory,6);
+  let cards=[];
+  data.forEach((d,i)=>{cards.push({id:i,display:d.front,pairId:i});cards.push({id:i,display:d.match,pairId:i});});
+  state.memCards=shuffle(cards);state.memFlipped=[];state.memMatched=[];state.memMoves=0;state.memLocked=false;state.starsAwarded=false;
+  state.screen='memory';render();
+}
+
+function flipCard(i) {
+  if(state.memLocked||state.memFlipped.includes(i)||state.memMatched.includes(i))return;
+  state.memFlipped.push(i);render();
+  if(state.memFlipped.length===2){
+    state.memMoves++;state.memLocked=true;
+    const[a,b]=state.memFlipped;
+    if(state.memCards[a].pairId===state.memCards[b].pairId){
+      state.memMatched.push(a,b);state.memFlipped=[];state.memLocked=false;
+      if(state.memMatched.length===state.memCards.length){setTimeout(()=>{state.screen='memoryWin';render();},600);}
+      else render();
+    } else {
+      setTimeout(()=>{state.memFlipped=[];state.memLocked=false;render();},1000);
+    }
+  }
+}
+
+// Speed
+function startSpeed() {
+  const isAnna=state.player==='anna';
+  // Generate many random math questions
+  let qs=[];
+  for(let i=0;i<50;i++){
+    if(isAnna){const a=Math.floor(Math.random()*5)+1,b=Math.floor(Math.random()*5)+1;const ans=a+b;const opts=shuffle([ans,ans+1,ans-1,ans+2].filter((v,idx,ar)=>ar.indexOf(v)===idx&&v>=0)).slice(0,4);if(opts.length<4)opts.push(ans+3);qs.push({display:`${a} + ${b} = ?`,answer:ans,options:shuffle([...new Set([ans,...opts])]).slice(0,4)});}
+    else{const ops=['+','-','×'];const op=ops[Math.floor(Math.random()*3)];let a,b,ans;if(op==='+'){a=Math.floor(Math.random()*50)+10;b=Math.floor(Math.random()*40)+5;ans=a+b;}else if(op==='-'){a=Math.floor(Math.random()*50)+20;b=Math.floor(Math.random()*(a-5))+1;ans=a-b;}else{a=Math.floor(Math.random()*9)+2;b=Math.floor(Math.random()*9)+2;ans=a*b;}const opts=[...new Set([ans,ans+2,ans-2,ans+5,ans-3,ans+1])].filter(v=>v>=0&&v!==ans);qs.push({display:`${a} ${op} ${b} = ?`,answer:ans,options:shuffle([ans,...opts.slice(0,3)])});}
+  }
+  state.questions=qs;state.currentQ=0;state.speedScore=0;state.speedStarted=false;state.speedTimeLeft=isAnna?30:45;state.starsAwarded=false;
+  state.screen='speed';render();
+}
+
+function beginSpeed() {
+  state.speedStarted=true;render();
+  state.speedTimer=setInterval(()=>{
+    state.speedTimeLeft--;
+    const td=document.querySelector('.timer-display');
+    if(td){td.textContent=state.speedTimeLeft+'s';if(state.speedTimeLeft<=10)td.classList.add('urgent');}
+    if(state.speedTimeLeft<=0){clearInterval(state.speedTimer);state.speedTimer=null;state.screen='speedResults';render();}
+  },1000);
+}
+
+function speedAnswer(btn) {
+  const q=state.questions[state.currentQ],sel=btn.getAttribute('data-value'),cor=String(q.answer);
+  if(sel===cor){state.speedScore++;document.querySelector('.speed-score-live').textContent='Score: '+state.speedScore;}
+  state.currentQ++;if(state.currentQ>=state.questions.length)state.currentQ=0;
+  // Re-render just the question area
+  const q2=state.questions[state.currentQ];
+  document.querySelector('.question-card').innerHTML=`<h2>What is...</h2><div class="math-problem">${q2.display}</div>`;
+  const og=document.querySelector('.options-grid');
+  og.innerHTML=shuffle([...q2.options]).map(o=>`<button class="option-btn" data-value="${o}" onclick="speedAnswer(this)">${o}</button>`).join('');
+}
+
+// Scramble
+let scrambleUsedIndices=[];
+function startScramble() {
+  const words=pick(state.player==='anna'?annaScrambleWords:emmaScrambleWords, state.player==='anna'?5:6);
+  state.scrambleWords=words;state.scrambleQ=0;state.score=0;state.starsAwarded=false;scrambleUsedIndices=[];
+  setupScrambleWord();state.screen='scramble';render();
+}
+
+function setupScrambleWord() {
+  const w=state.scrambleWords[state.scrambleQ];
+  state.scrambleLetters=shuffle(w.word.split(''));
+  state.scrambleSlots=new Array(w.word.length).fill('');
+  scrambleUsedIndices=[];
+}
+
+function isLetterUsed(idx) { return scrambleUsedIndices.includes(idx); }
+function countInSlots(l) { return state.scrambleSlots.filter(s=>s===l).length; }
+function countInScrambled(l) { return state.scrambleLetters.filter(s=>s===l).length; }
+
+function pickLetter(idx) {
+  if(scrambleUsedIndices.includes(idx))return;
+  const nextEmpty=state.scrambleSlots.indexOf('');
+  if(nextEmpty===-1)return;
+  state.scrambleSlots[nextEmpty]=state.scrambleLetters[idx];
+  scrambleUsedIndices.push(idx);render();
+}
+
+function removeSlotLetter(slotIdx) {
+  const letter=state.scrambleSlots[slotIdx];
+  if(!letter)return;
+  state.scrambleSlots[slotIdx]='';
+  // Find the corresponding used index
+  for(let i=scrambleUsedIndices.length-1;i>=0;i--){
+    if(state.scrambleLetters[scrambleUsedIndices[i]]===letter){scrambleUsedIndices.splice(i,1);break;}
+  }
+  render();
+}
+
+function checkScramble() {
+  const w=state.scrambleWords[state.scrambleQ];
+  const guess=state.scrambleSlots.join('');
+  const fb=document.getElementById('feedback');
+  if(guess.length<w.word.length){fb.innerHTML=`<div class="feedback wrong">Fill in all the letters! ✏️</div>`;return;}
+  if(guess===w.word){
+    state.score++;
+    fb.innerHTML=`<div class="feedback correct">Correct! 🎉</div>`;
+    setTimeout(()=>{state.scrambleQ++;if(state.scrambleQ<state.scrambleWords.length)setupScrambleWord();render();},1200);
+  } else {
+    fb.innerHTML=`<div class="feedback wrong">Not quite! Try again 💡</div>`;
+    state.scrambleSlots=new Array(w.word.length).fill('');scrambleUsedIndices=[];
+    setTimeout(render,1000);
+  }
+}
+
+// Drawing
+let drawCtx=null, isDrawing=false;
+function startDrawing() {
+  const prompts=state.player==='anna'?annaDrawPrompts:emmaDrawPrompts;
+  state.drawPrompt=prompts[Math.floor(Math.random()*prompts.length)];
+  state.drawColor='#1E293B';state.drawSize=8;
+  state.screen='drawing';render();
+}
+
+function setupCanvas() {
+  const canvas=document.getElementById('drawCanvas');if(!canvas)return;
+  drawCtx=canvas.getContext('2d');
+  drawCtx.fillStyle='white';drawCtx.fillRect(0,0,canvas.width,canvas.height);
+  drawCtx.lineCap='round';drawCtx.lineJoin='round';
+  const getPos=(e)=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
+  const start=(e)=>{e.preventDefault();isDrawing=true;const p=getPos(e);drawCtx.beginPath();drawCtx.moveTo(p.x,p.y);};
+  const move=(e)=>{e.preventDefault();if(!isDrawing)return;const p=getPos(e);drawCtx.strokeStyle=state.drawColor;drawCtx.lineWidth=state.drawSize;drawCtx.lineTo(p.x,p.y);drawCtx.stroke();};
+  const end=(e)=>{e.preventDefault();isDrawing=false;};
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);
+  canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+}
+
+function setColor(c) { state.drawColor=c; document.querySelectorAll('.color-btn').forEach(b=>{b.classList.toggle('selected',b.getAttribute('data-color')===c);}); }
+function setSize(s) { state.drawSize=s; document.querySelectorAll('.brush-btn').forEach(b=>{if(b.textContent==='Small'&&s===3||b.textContent==='Medium'&&s===8||b.textContent==='Large'&&s===16)b.classList.add('selected');else if(['Small','Medium','Large'].includes(b.textContent))b.classList.remove('selected');}); }
+function clearCanvas() { const c=document.getElementById('drawCanvas');if(c){const ctx=c.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,c.width,c.height);} }
+function newDrawPrompt() { const prompts=state.player==='anna'?annaDrawPrompts:emmaDrawPrompts;state.drawPrompt=prompts[Math.floor(Math.random()*prompts.length)];render(); }
+function finishDrawing() { state.stars[state.player]+=1;saveStars();showConfetti();setTimeout(goActivity,1500); }
+
+// ═══ LEARN MODE (Anna) ═══
+const learnLetters = [
+  {char:'A',word:'Apple',emoji:'🍎'},{char:'B',word:'Ball',emoji:'⚽'},{char:'C',word:'Cat',emoji:'🐱'},
+  {char:'D',word:'Dog',emoji:'🐶'},{char:'E',word:'Egg',emoji:'🥚'},{char:'F',word:'Fish',emoji:'🐟'},
+  {char:'G',word:'Grapes',emoji:'🍇'},{char:'H',word:'House',emoji:'🏠'},{char:'I',word:'Ice cream',emoji:'🍦'},
+  {char:'J',word:'Juice',emoji:'🧃'},{char:'K',word:'Kite',emoji:'🪁'},{char:'L',word:'Lion',emoji:'🦁'},
+  {char:'M',word:'Moon',emoji:'🌙'},{char:'N',word:'Nose',emoji:'👃'},{char:'O',word:'Orange',emoji:'🍊'},
+  {char:'P',word:'Penguin',emoji:'🐧'},{char:'Q',word:'Queen',emoji:'👑'},{char:'R',word:'Rainbow',emoji:'🌈'},
+  {char:'S',word:'Sun',emoji:'☀️'},{char:'T',word:'Tree',emoji:'🌳'},{char:'U',word:'Umbrella',emoji:'☂️'},
+  {char:'V',word:'Violin',emoji:'🎻'},{char:'W',word:'Water',emoji:'💧'},{char:'X',word:'Xylophone',emoji:'🎵'},
+  {char:'Y',word:'Yellow',emoji:'💛'},{char:'Z',word:'Zebra',emoji:'🦓'}
+];
+const learnNumbers = [
+  {char:'1',word:'One',emoji:'☝️'},{char:'2',word:'Two',emoji:'✌️'},{char:'3',word:'Three',emoji:'🤟'},
+  {char:'4',word:'Four',emoji:'🍀'},{char:'5',word:'Five',emoji:'🖐️'},{char:'6',word:'Six',emoji:'🎲'},
+  {char:'7',word:'Seven',emoji:'🌈'},{char:'8',word:'Eight',emoji:'🐙'},{char:'9',word:'Nine',emoji:'⭐'},
+  {char:'10',word:'Ten',emoji:'🔟'},{char:'11',word:'Eleven',emoji:'⚽'},{char:'12',word:'Twelve',emoji:'🕐'},
+  {char:'13',word:'Thirteen',emoji:'🍩'},{char:'14',word:'Fourteen',emoji:'🎈'},{char:'15',word:'Fifteen',emoji:'🦋'},
+  {char:'16',word:'Sixteen',emoji:'🌺'},{char:'17',word:'Seventeen',emoji:'🎀'},{char:'18',word:'Eighteen',emoji:'🧁'},
+  {char:'19',word:'Nineteen',emoji:'🌟'},{char:'20',word:'Twenty',emoji:'🎉'}
+];
+
+const learnShapesColors = [
+  {char:'⭕',word:'Circle',emoji:'⚽',desc:'A round shape with no corners'},
+  {char:'⬛',word:'Square',emoji:'🎁',desc:'4 equal sides and 4 corners'},
+  {char:'🔺',word:'Triangle',emoji:'🔺',desc:'3 sides and 3 corners'},
+  {char:'⭐',word:'Star',emoji:'🌟',desc:'5 points sticking out'},
+  {char:'📏',word:'Rectangle',emoji:'🚪',desc:'Like a stretched square'},
+  {char:'🥚',word:'Oval',emoji:'🥚',desc:'Like a stretched circle'},
+  {char:'❤️',word:'Heart',emoji:'💕',desc:'The shape of love'},
+  {char:'🔴',word:'Red',emoji:'🍎',desc:'The color of apples'},
+  {char:'🟡',word:'Yellow',emoji:'🍌',desc:'The color of bananas'},
+  {char:'🔵',word:'Blue',emoji:'🌊',desc:'The color of the ocean'},
+  {char:'🟢',word:'Green',emoji:'🌿',desc:'The color of grass'},
+  {char:'🟠',word:'Orange',emoji:'🍊',desc:'The color of oranges'},
+  {char:'🟣',word:'Purple',emoji:'🍇',desc:'The color of grapes'},
+  {char:'⬜',word:'White',emoji:'☁️',desc:'The color of snow and clouds'},
+];
+
+let learnData=[], learnIdx=0, learnType='';
+
+function startLearn(type) {
+  learnType=type;
+  learnData=type==='letters'?learnLetters:type==='numbers'?learnNumbers:learnShapesColors;
+  learnIdx=0;
+  state.screen='learn';render();
+}
+
+// Pre-load voices
+let voicesLoaded=[];
+function loadVoices(){voicesLoaded=window.speechSynthesis?window.speechSynthesis.getVoices():[];}
+if('speechSynthesis' in window){loadVoices();window.speechSynthesis.onvoiceschanged=loadVoices;}
+
+function speakText(text) {
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.rate=0.9; u.pitch=1.0; u.lang='en-US';
+    // Pick a natural-sounding female voice (good for kids)
+    const v=voicesLoaded;
+    const preferred=v.find(x=>x.name.includes('Samantha'))||v.find(x=>x.name.includes('Karen'))||v.find(x=>x.name.includes('Google US English'))||v.find(x=>x.lang==='en-US'&&x.localService);
+    if(preferred)u.voice=preferred;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+function speakCurrent() {
+  const item=learnData[learnIdx];
+  if(learnType==='letters'){
+    speakText(item.char + '. ' + item.char + ' is for ' + item.word);
+  } else if(learnType==='shapes'){
+    speakText('This is a ' + item.word + '. ' + item.desc);
+  } else {
+    speakText(item.char + '. ' + item.word);
+  }
+}
+
+function learnNext() { if(learnIdx<learnData.length-1){learnIdx++;state.screen='learn';render();speakCurrent();} else {state.stars.anna+=2;saveStars();showConfetti();setTimeout(goActivity,1500);} }
+function learnPrev() { if(learnIdx>0){learnIdx--;state.screen='learn';render();speakCurrent();} }
+
+function renderLearn(app) {
+  const item=learnData[learnIdx];
+  const p=players[state.player];
+  const titles={'letters':'🔤 Learn Letters','numbers':'🔢 Learn Numbers','shapes':'🔷 Learn Shapes & Colors'};
+  const title=titles[learnType]||'📚 Learn';
+  const total=learnData.length;
+  const tapLabel=learnType==='letters'?'letter':learnType==='numbers'?'number':'shape';
+  const wordLabel=learnType==='letters'?item.char+' is for '+item.word:learnType==='shapes'?item.word:item.word;
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' '+title)}
+    <div class="container anna-mode"><div class="learn-area">
+      <div class="question-counter">${learnIdx+1} of ${total}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${(learnIdx/total)*100}%"></div></div>
+      <div class="question-card" style="padding:24px 20px;">
+        <div class="learn-big-char" onclick="speakCurrent()">${item.char}</div>
+        <div class="learn-emoji">${item.emoji}</div>
+        <div class="learn-word">${wordLabel}</div>
+        ${learnType==='shapes'?`<div class="learn-desc" style="font-size:18px;color:var(--text-light);margin:4px 0 12px;">${item.desc}</div>`:''}
+        <div class="learn-desc">Tap the ${tapLabel} or press the sound button!</div>
+        <button class="speak-btn big" onclick="speakCurrent()">🔊 Listen</button>
+      </div>
+      <div class="learn-dots">${learnData.map((_,i)=>`<div class="learn-dot ${i===learnIdx?'active':i<learnIdx?'done':''}"></div>`).join('')}</div>
+      <div class="learn-nav">
+        <button class="action-btn secondary" onclick="learnPrev()" ${learnIdx===0?'disabled style="opacity:0.4"':''}>⬅️ Back</button>
+        <button class="action-btn primary" onclick="learnNext()">${learnIdx===total-1?'✅ Done!':'Next ➡️'}</button>
+      </div>
+    </div></div>`;
+}
+
+// ═══ LETTER TRACING ═══
+const traceLetters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const traceNumbers='1234567890'.split('');
+let traceData=[], traceIdx=0, traceType='letters';
+
+function startTrace(type) {
+  traceType=type;
+  traceData=type==='letters'?traceLetters:traceNumbers;
+  traceIdx=0;
+  state.screen='trace';render();
+}
+
+function renderTrace(app) {
+  const p=players[state.player];
+  const char=traceData[traceIdx];
+  const total=traceData.length;
+  const title=traceType==='letters'?'✏️ Trace Letters':'✏️ Trace Numbers';
+  app.innerHTML=`
+    ${headerHTML(p.emoji+' '+title)}
+    <div class="container anna-mode"><div class="trace-area">
+      <div class="trace-counter">${traceIdx+1} of ${total}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${(traceIdx/total)*100}%"></div></div>
+      <div class="trace-letter-label">Trace the ${traceType==='letters'?'letter':'number'}: <strong>${char}</strong></div>
+      <button class="speak-btn" onclick="speakText('${char}')" style="margin-bottom:8px;">🔊 Hear it</button>
+      <div class="trace-canvas-wrap"><canvas id="traceCanvas" width="340" height="340"></canvas></div>
+      <div style="margin-top:10px;display:flex;justify-content:center;gap:10px;">
+        <button class="brush-btn" onclick="clearTrace()">🗑️ Clear</button>
+      </div>
+      <div class="learn-nav" style="margin-top:16px;">
+        <button class="action-btn secondary" onclick="tracePrev()" ${traceIdx===0?'disabled style="opacity:0.4"':''}>⬅️ Back</button>
+        <button class="action-btn primary" onclick="traceNext()">${traceIdx===total-1?'✅ Done!':'Next ➡️'}</button>
+      </div>
+    </div></div>`;
+  setupTraceCanvas(char);
+}
+
+function setupTraceCanvas(char) {
+  const canvas=document.getElementById('traceCanvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  // White background
+  ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Draw guide lines
+  ctx.strokeStyle='#E2E8F0';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(0,canvas.height/2);ctx.lineTo(canvas.width,canvas.height/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(canvas.width/2,0);ctx.lineTo(canvas.width/2,canvas.height);ctx.stroke();
+  ctx.setLineDash([]);
+  // Draw shadow letter (big, light gray, dashed)
+  ctx.fillStyle='#E2E8F0';
+  ctx.font='bold 240px Nunito, sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(char,canvas.width/2,canvas.height/2+10);
+  // Dotted outline of letter
+  ctx.strokeStyle='#CBD5E1';ctx.lineWidth=2;ctx.setLineDash([4,4]);
+  ctx.strokeText(char,canvas.width/2,canvas.height/2+10);
+  ctx.setLineDash([]);
+  // Setup drawing on top
+  let drawing=false;
+  const getPos=(e)=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
+  const start=(e)=>{e.preventDefault();drawing=true;const pos=getPos(e);ctx.beginPath();ctx.moveTo(pos.x,pos.y);};
+  const move=(e)=>{e.preventDefault();if(!drawing)return;const pos=getPos(e);ctx.strokeStyle='#C084FC';ctx.lineWidth=8;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);ctx.lineTo(pos.x,pos.y);ctx.stroke();};
+  const end=(e)=>{e.preventDefault();drawing=false;};
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);
+  canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+  // Auto speak
+  setTimeout(()=>speakText(char),300);
+}
+
+function clearTrace() {
+  const char=traceData[traceIdx];
+  setupTraceCanvas(char);
+}
+
+function traceNext() {
+  if(traceIdx<traceData.length-1){traceIdx++;state.screen='trace';render();}
+  else{state.stars.anna+=2;saveStars();showConfetti();setTimeout(goActivity,1500);}
+}
+function tracePrev() { if(traceIdx>0){traceIdx--;state.screen='trace';render();} }
+
+// ═══ INIT ═══
+render();
+</script>
+</body>
+</html>
